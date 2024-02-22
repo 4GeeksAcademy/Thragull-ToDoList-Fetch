@@ -10,3 +10,27 @@
     import 'relative/path/to/stylesheet.scss';
 
 */
+.trash{
+    border-top-right-radius: inherit;
+    border-bottom-right-radius: inherit;
+    opacity: 0;
+    width: 0;
+    transition: 0.5s linear;
+    font-size: larger;
+    align-self: center;
+}
+li:hover .trash{
+    opacity: 1;
+    width: 60px;
+}
+.text{
+    margin-left: auto;
+    font-size: larger;
+}
+
+@media (max-width: 991px){
+    .input-group-text{
+        width:0;
+        visibility: hidden;
+    }
+}
