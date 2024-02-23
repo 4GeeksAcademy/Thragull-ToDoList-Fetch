@@ -7,7 +7,7 @@ const List = () => {
     const [toDo, setToDo] = useState("")
 
     const addTask = (event, toDo)=>{
-      if ((event.key === "Enter") && (toDo !== "")) {
+      if (toDo !== "") {
       let newItemToAdd = {
         done: false,
         label: toDo
@@ -126,7 +126,9 @@ const List = () => {
                     }
                   }
                   onKeyDown={(event) =>{
-                      update(addTask(event, toDo));
+                      if (event.key === "Enter"){
+                        update(addTask(event, toDo));
+                      }
                     }
                   }
           /> 
