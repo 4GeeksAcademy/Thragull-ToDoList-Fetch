@@ -3,10 +3,12 @@ import React, {useState, useEffect} from 'react'
 const List = () => {
 
     // Logic
-    const [list, updateList] = useState([]);
+    const [list, updateList] = useState([{done: false, label:"Example Task"}]);
     const [toDo, setToDo] = useState("")
 
-    const addTask = (event, toDo)=>{
+    let loaded = false;
+
+    const addTask = (toDo)=>{
       if (toDo !== "") {
       let newItemToAdd = {
         done: false,
@@ -37,20 +39,21 @@ const List = () => {
       .then((response)=>{
       return response.json()
       })
-      .then((data)=>{console.log(data)})
+      .then((data)=>{loaded=true})
       .catch((err)=>{return err})
     }, [])
 
     // GET
 
     useEffect(() => {
+      if (loaded){
       fetch(urlApiToDo)
 	    .then((response)=>{
 		  return response.json()
 	    })
 	    .then((data)=>{updateList(data)})
-	    .catch((err)=>{return err})
-    }, [list])
+	    .catch((err)=>{return err})}
+    }, [list.length, loaded])
 
 
     const update = (taskList) => {
@@ -62,8 +65,7 @@ const List = () => {
         }
       })
       .then((response)=>{return response.json()})
-      .then((data)=>{console.log(data) 
-                     updateList(taskList)})
+      .then((data)=>{updateList(taskList)})
       .catch((err)=>{err})
     }
 
@@ -71,51 +73,14 @@ const List = () => {
       return list.filter((element, index) => index !== indexToDelete);
     }
 
-    const deleteAll = () => {
-      return [];
+    const listToShow = () => {
+      return list.filter((element, index) => index !== 0);
     }
-    // PUT
-    // Update
-    /*const update = (item) => {
-      fetch(urlApiToDo, {
-        method: "PUT",
-        body: JSON.stringify([...list, item]),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then((response)=>{return response.json()})
-      .then((data)=>{updateList([...list, item])})
-      .catch((err)=>{err})
-    }
-    // Delete
-    const deleteTask = (indexToDelete) =>{
-      fetch(urlApiToDo, {
-        method: "PUT",
-        body: JSON.stringify(list.filter((element, index) => index !== indexToDelete)),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then((response)=>{return response.json()})
-      .then((data)=>{updateList(list.filter((element, index) => index !== indexToDelete))})
-      .catch((err)=>{err})
-    }
-    // Delete All
-    const deleteAll = () =>{
-      fetch(urlApiToDo, {
-        method: "PUT",
-        body: JSON.stringify([]),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then((response)=>{return response.json()})
-      .then((data)=>{updateList([])})
-      .catch((err)=>{err})
-    }*/
-  
 
+    const deleteAll = () => {
+      update([{done: false, label:"Example Task"}]);
+    }
+    
   return (
     <div className='container justify-content-center mt-5 w-50'>
       <div className='input-group mb-5'>
@@ -127,21 +92,21 @@ const List = () => {
                   }
                   onKeyDown={(event) =>{
                       if (event.key === "Enter"){
-                        update(addTask(event, toDo));
+                        update(addTask(toDo));
                       }
                     }
                   }
           /> 
       </div>
       <ul className='list-group rounded-4'>
-        {list.map((element, index)=> <li key={index} className='list-group-item d-flex p-0 ps-2 bg-secondary'>
+        {listToShow().map((element, index)=><li key={index+1} className='list-group-item d-flex p-0 ps-2 bg-secondary'>
                                                 <div className='text my-auto py-2'>{element.label}</div>
                                                 <i className="fa fa-trash trash bg-danger px-3 py-3 ms-auto text-white"
-                                                onClick={(event) => update(deleteByIndex(index))}></i>
+                                                onClick={(event) => update(deleteByIndex(index+1))}></i>
                                       </li> )}
       </ul>
-      <p className='text-start ms-2 text-secondary'>{list.length} items remaining.</p>
-      <button className='btn btn-danger'  >Delete All Items</button>
+      <p className='text-start ms-2 text-secondary'>{list.length-1} items remaining.</p>
+      <button className='btn btn-danger' onClick={deleteAll}>Delete All Items</button>
     </div>
   )
 }
